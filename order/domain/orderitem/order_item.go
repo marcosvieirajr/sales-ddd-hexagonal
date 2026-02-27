@@ -4,8 +4,8 @@ import (
 	"errors"
 	"time"
 
-	"github.com/marcosvieirajr/sales/domain"
-	"github.com/marcosvieirajr/sales/domain/errs"
+	"github.com/marcosvieirajr/sales-ddd-hexagonal/shared"
+	"github.com/marcosvieirajr/sales-ddd-hexagonal/shared/errs"
 )
 
 var (
@@ -43,16 +43,16 @@ type OrderItem struct {
 // single joined error, allowing callers to inspect every failure via [errors.Is].
 func NewOrderItem(productID, productName string, unitPrice float64, quantity int) (*OrderItem, error) {
 	if err := errors.Join(
-		domain.CheckNotNullOrWhiteSpace(productID, ErrInvalidProductID),
-		domain.CheckNotNullOrWhiteSpace(productName, ErrInvalidProductName),
-		domain.CheckNotZeroOrNegative(unitPrice, ErrInvalidUnitPrice),
-		domain.CheckNotZeroOrNegative(float64(quantity), ErrInvalidQuantity),
+		shared.CheckNotNullOrWhiteSpace(productID, ErrInvalidProductID),
+		shared.CheckNotNullOrWhiteSpace(productName, ErrInvalidProductName),
+		shared.CheckNotZeroOrNegative(unitPrice, ErrInvalidUnitPrice),
+		shared.CheckNotZeroOrNegative(float64(quantity), ErrInvalidQuantity),
 	); err != nil {
 		return nil, err
 	}
 
 	oi := OrderItem{
-		ID:          domain.GenerateID(),
+		ID:          shared.GenerateID(),
 		ProductID:   productID,
 		ProductName: productName,
 		UnitPrice:   unitPrice,

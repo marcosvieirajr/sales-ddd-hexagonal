@@ -4,8 +4,8 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/marcosvieirajr/sales/domain"
-	"github.com/marcosvieirajr/sales/domain/order"
+	"github.com/marcosvieirajr/sales-ddd-hexagonal/order/domain"
+	"github.com/marcosvieirajr/sales-ddd-hexagonal/shared"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -39,7 +39,7 @@ func TestNewDeliveryAddress(t *testing.T) {
 					state:      "BA",
 					country:    "Country",
 				},
-				want: domain.Must(order.NewDeliveryAddress(
+				want: shared.Must(order.NewDeliveryAddress(
 					"12345-678",
 					"Street",
 					"123",
@@ -62,7 +62,7 @@ func TestNewDeliveryAddress(t *testing.T) {
 					state:      "BA",
 					country:    "Country",
 				},
-				want: domain.Must(order.NewDeliveryAddress(
+				want: shared.Must(order.NewDeliveryAddress(
 					"12345-678",
 					"Street",
 					"123",
@@ -95,8 +95,8 @@ func TestNewDeliveryAddress(t *testing.T) {
 			country    string
 		}
 		tests := []struct {
-			name        string
-			args        args
+			name    string
+			args    args
 			wantErr error
 		}{
 			{
@@ -181,8 +181,8 @@ func TestNewDeliveryAddress(t *testing.T) {
 
 	t.Run("should return an error when CEP is invalid", func(t *testing.T) {
 		tests := []struct {
-			name        string
-			cep         string
+			name    string
+			cep     string
 			wantErr error
 		}{
 			{name: "whitespace", cep: "", wantErr: order.ErrInvalidCEP},
@@ -204,8 +204,8 @@ func TestNewDeliveryAddress(t *testing.T) {
 
 	t.Run("should return an error when state is invalid", func(t *testing.T) {
 		tests := []struct {
-			name        string
-			state       string
+			name    string
+			state   string
 			wantErr error
 		}{
 			{name: "invalid UF code", state: "AA", wantErr: order.ErrInvalidState},
@@ -225,69 +225,35 @@ func TestNewDeliveryAddress(t *testing.T) {
 }
 
 func TestDeliveryAddress_Equals(t *testing.T) {
-	baseAddr := domain.Must(order.NewDeliveryAddress(
+	baseAddr := shared.Must(order.NewDeliveryAddress(
 		"12345-678", "Street", "123", "",
 		"District", "City", "BA", "Country",
 	))
 
-	type fields struct {
-		cep        string
-		street     string
-		number     string
-		complement string
-		district   string
-		city       string
-		state      string
-		country    string
-	}
 	tests := []struct {
-		name   string
-		fields fields
-		want   bool
+		name  string
+		other *order.DeliveryAddress
+		want  bool
 	}{
 		{
-			name: "should return true for equal delivery addresses",
-			fields: fields{
-				cep:        "12345-678",
-				street:     "Street",
-				number:     "123",
-				complement: "",
-				district:   "District",
-				city:       "City",
-				state:      "BA",
-				country:    "Country",
-			},
-			want: true,
+			name:  "should return true for equal delivery addresses",
+			other: shared.Must(order.NewDeliveryAddress("12345-678", "Street", "123", "", "District", "City", "BA", "Country")),
+			want:  true,
 		},
 		{
-			name: "should return false for different delivery addresses",
-			fields: fields{
-				cep:        "12345-678",
-				street:     "Street n2",
-				number:     "123",
-				complement: "",
-				district:   "District",
-				city:       "City",
-				state:      "BA",
-				country:    "Country",
-			},
-			want: false,
+			name:  "should return false for different delivery addresses",
+			other: shared.Must(order.NewDeliveryAddress("12345-678", "Street n2", "123", "", "District", "City", "BA", "Country")),
+			want:  false,
+		},
+		{
+			name:  "should return false for nil delivery address",
+			other: nil,
+			want:  false,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			other := domain.Must(order.NewDeliveryAddress(
-				tt.fields.cep,
-				tt.fields.street,
-				tt.fields.number,
-				tt.fields.complement,
-				tt.fields.district,
-				tt.fields.city,
-				tt.fields.state,
-				tt.fields.country,
-			))
-
-			got := baseAddr.Equals(other)
+			got := baseAddr.Equals(tt.other)
 			assert.Equal(t, tt.want, got)
 		})
 	}

@@ -4,8 +4,8 @@ import (
 	"errors"
 	"time"
 
-	"github.com/marcosvieirajr/sales/domain"
-	"github.com/marcosvieirajr/sales/domain/errs"
+	"github.com/marcosvieirajr/sales-ddd-hexagonal/shared"
+	"github.com/marcosvieirajr/sales-ddd-hexagonal/shared/errs"
 )
 
 var (
@@ -42,14 +42,14 @@ type Payment struct {
 func NewPayment(orderID string, amount float64, method Method) (*Payment, error) {
 	// the order ID cannot be null or whitespace, and the amount must be greater than zero.
 	if err := errors.Join(
-		domain.CheckNotNullOrWhiteSpace(orderID, ErrInvalidOrderID),
-		domain.CheckNotZeroOrNegative(amount, ErrInvalidPaymentAmount),
+		shared.CheckNotNullOrWhiteSpace(orderID, ErrInvalidOrderID),
+		shared.CheckNotZeroOrNegative(amount, ErrInvalidPaymentAmount),
 	); err != nil {
 		return nil, err
 	}
 
 	return &Payment{
-		ID:      domain.GenerateID(),
+		ID:      shared.GenerateID(),
 		OrderID: orderID,
 		Method:  method,
 		Status:  StatusPending,
@@ -65,7 +65,7 @@ func (p *Payment) ConfirmPayment() error {
 	// the payment can only be confirmed if it is currently pending and has a transaction code defined.
 	if err := errors.Join(
 		p.checkStatusEqual(StatusPending, ErrPaymentNotPending),
-		domain.CheckNotNil(p.TransactionCode, ErrTransactionCodeNotDefined),
+		shared.CheckNotNil(p.TransactionCode, ErrTransactionCodeNotDefined),
 	); err != nil {
 		return err
 	}
@@ -87,7 +87,7 @@ func (p *Payment) RefusePayment() error {
 	// the payment can only be refused if it is currently pending and has a transaction code defined.
 	if err := errors.Join(
 		p.checkStatusEqual(StatusPending, ErrPaymentNotPending),
-		domain.CheckNotNil(p.TransactionCode, ErrTransactionCodeNotDefined),
+		shared.CheckNotNil(p.TransactionCode, ErrTransactionCodeNotDefined),
 	); err != nil {
 		return err
 	}
@@ -109,8 +109,8 @@ func (p *Payment) DefineTransactionCode(code string) error {
 	// and that the payment is pending (i.e. not already approved or refused).
 	if err := errors.Join(
 		p.checkStatusEqual(StatusPending, ErrCannotDefineTransactionCodeAfterCompletion),
-		domain.CheckNotNullOrWhiteSpace(code, ErrInvalidTransactionCode),
-		domain.CheckNil(p.TransactionCode, ErrTransactionCodeAlreadyDefined),
+		shared.CheckNotNullOrWhiteSpace(code, ErrInvalidTransactionCode),
+		shared.CheckNil(p.TransactionCode, ErrTransactionCodeAlreadyDefined),
 	); err != nil {
 		return err
 	}
@@ -146,6 +146,6 @@ func (p *Payment) generateTransactionCode() {
 		return
 	}
 
-	c := `LOCAL-` + domain.GenerateID()
+	c := `LOCAL-` + shared.GenerateID()
 	_ = p.DefineTransactionCode(c)
 }

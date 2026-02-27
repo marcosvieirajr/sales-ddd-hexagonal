@@ -11,7 +11,7 @@ A reference implementation of **Domain-Driven Design (DDD)** tactical patterns c
 | | |
 |---|---|
 | **Language** | Go 1.25 |
-| **Module** | `github.com/marcosvieirajr/sales` |
+| **Module** | `github.com/marcosvieirajr/sales-ddd-hexagonal` |
 | **Core Domain** | Order Management |
 | **Architecture** | DDD + Hexagonal (Ports & Adapters) |
 

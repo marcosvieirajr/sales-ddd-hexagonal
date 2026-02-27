@@ -5,8 +5,8 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/marcosvieirajr/sales/domain"
-	"github.com/marcosvieirajr/sales/domain/errs"
+	"github.com/marcosvieirajr/sales-ddd-hexagonal/shared"
+	"github.com/marcosvieirajr/sales-ddd-hexagonal/shared/errs"
 )
 
 var (
@@ -43,12 +43,12 @@ type DeliveryAddress struct {
 // single joined error, allowing callers to inspect every failure via [errors.Is].
 func NewDeliveryAddress(cep, street, number, complement, district, city, state, country string) (*DeliveryAddress, error) {
 	if err := errors.Join(
-		domain.CheckNotNullOrWhiteSpace(street, ErrInvalidStreet),
-		domain.CheckNotNullOrWhiteSpace(number, ErrInvalidNumber),
-		domain.CheckNotNullOrWhiteSpace(district, ErrInvalidDistrict),
-		domain.CheckNotNullOrWhiteSpace(city, ErrInvalidCity),
-		domain.CheckNotNullOrWhiteSpace(country, ErrInvalidCountry),
-		domain.CheckMatchRegex(cep, cepRegex, ErrInvalidCEP),
+		shared.CheckNotNullOrWhiteSpace(street, ErrInvalidStreet),
+		shared.CheckNotNullOrWhiteSpace(number, ErrInvalidNumber),
+		shared.CheckNotNullOrWhiteSpace(district, ErrInvalidDistrict),
+		shared.CheckNotNullOrWhiteSpace(city, ErrInvalidCity),
+		shared.CheckNotNullOrWhiteSpace(country, ErrInvalidCountry),
+		shared.CheckMatchRegex(cep, cepRegex, ErrInvalidCEP),
 		checkValidState(state),
 	); err != nil {
 		return nil, err

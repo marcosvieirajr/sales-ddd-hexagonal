@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/marcosvieirajr/sales/domain/errs"
+	"github.com/marcosvieirajr/sales-ddd-hexagonal/shared/errs"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -31,18 +31,18 @@ func TestWrap(t *testing.T) {
 
 func TestDomainError_Error(t *testing.T) {
 	tests := []struct {
-		name     string
-		err      *errs.DomainError
-		want     string
+		name string
+		err  *errs.DomainError
+		want string
 	}{
 		{
-			name:     "should format error without underlying error",
-			err:      errs.New("TEST.CODE", "test message"),
+			name: "should format error without underlying error",
+			err:  errs.New("TEST.CODE", "test message"),
 			want: "[TEST.CODE] test message",
 		},
 		{
-			name:     "should format error with underlying error",
-			err:      errs.Wrap("TEST.CODE", "test message", fmt.Errorf("underlying cause")),
+			name: "should format error with underlying error",
+			err:  errs.Wrap("TEST.CODE", "test message", fmt.Errorf("underlying cause")),
 			want: "[TEST.CODE] test message: underlying cause",
 		},
 	}
@@ -65,34 +65,34 @@ func TestDomainError_Is(t *testing.T) {
 	sentinel := errs.New("TEST.CODE", "test message")
 
 	tests := []struct {
-		name     string
-		err      error
-		target   error
-		want     bool
+		name   string
+		err    error
+		target error
+		want   bool
 	}{
 		{
-			name:     "should match errors with the same code",
-			err:      sentinel,
-			target:   errs.New("TEST.CODE", "different message"),
-			want: true,
+			name:   "should match errors with the same code",
+			err:    sentinel,
+			target: errs.New("TEST.CODE", "different message"),
+			want:   true,
 		},
 		{
-			name:     "should match wrapped copy against sentinel",
-			err:      sentinel.Wrap(fmt.Errorf("some cause")),
-			target:   sentinel,
-			want: true,
+			name:   "should match wrapped copy against sentinel",
+			err:    sentinel.Wrap(fmt.Errorf("some cause")),
+			target: sentinel,
+			want:   true,
 		},
 		{
-			name:     "should not match errors with different codes",
-			err:      sentinel,
-			target:   errs.New("OTHER.CODE", "test message"),
-			want: false,
+			name:   "should not match errors with different codes",
+			err:    sentinel,
+			target: errs.New("OTHER.CODE", "test message"),
+			want:   false,
 		},
 		{
-			name:     "should not match non-DomainError target",
-			err:      sentinel,
-			target:   fmt.Errorf("plain error"),
-			want: false,
+			name:   "should not match non-DomainError target",
+			err:    sentinel,
+			target: fmt.Errorf("plain error"),
+			want:   false,
 		},
 	}
 	for _, tt := range tests {

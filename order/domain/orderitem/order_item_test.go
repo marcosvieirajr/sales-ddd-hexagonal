@@ -5,15 +5,15 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
-	"github.com/marcosvieirajr/sales/domain"
-	"github.com/marcosvieirajr/sales/domain/order/orderitem"
+	"github.com/marcosvieirajr/sales-ddd-hexagonal/order/domain/orderitem"
+	"github.com/marcosvieirajr/sales-ddd-hexagonal/shared"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func createValidOrderItem(t *testing.T, unitPrice float64, quantity int) *orderitem.OrderItem {
 	t.Helper()
-	return domain.Must(orderitem.NewOrderItem("prod-123", "Test Product", unitPrice, quantity))
+	return shared.Must(orderitem.NewOrderItem("prod-123", "Test Product", unitPrice, quantity))
 }
 
 func TestNewOrderItem(t *testing.T) {
@@ -41,38 +41,38 @@ func TestNewOrderItem(t *testing.T) {
 			quantity    int
 		}
 		tests := []struct {
-			name        string
-			args        args
+			name    string
+			args    args
 			wantErr error
 		}{
 			{
-				name:        "should return an error if product ID is invalid",
-				args:        args{productID: "", productName: "Product Name", unitPrice: 10.0, quantity: 2},
+				name:    "should return an error if product ID is invalid",
+				args:    args{productID: "", productName: "Product Name", unitPrice: 10.0, quantity: 2},
 				wantErr: orderitem.ErrInvalidProductID,
 			},
 			{
-				name:        "should return an error if product name is empty",
-				args:        args{productID: "prod-123", productName: "", unitPrice: 10.0, quantity: 2},
+				name:    "should return an error if product name is empty",
+				args:    args{productID: "prod-123", productName: "", unitPrice: 10.0, quantity: 2},
 				wantErr: orderitem.ErrInvalidProductName,
 			},
 			{
-				name:        "should return an error if unit price is zero",
-				args:        args{productID: "prod-123", productName: "Product Name", unitPrice: 0.0, quantity: 2},
+				name:    "should return an error if unit price is zero",
+				args:    args{productID: "prod-123", productName: "Product Name", unitPrice: 0.0, quantity: 2},
 				wantErr: orderitem.ErrInvalidUnitPrice,
 			},
 			{
-				name:        "should return an error if unit price is negative",
-				args:        args{productID: "prod-123", productName: "Product Name", unitPrice: -0.1, quantity: 2},
+				name:    "should return an error if unit price is negative",
+				args:    args{productID: "prod-123", productName: "Product Name", unitPrice: -0.1, quantity: 2},
 				wantErr: orderitem.ErrInvalidUnitPrice,
 			},
 			{
-				name:        "should return an error if quantity is zero",
-				args:        args{productID: "prod-123", productName: "Product Name", unitPrice: 10.0, quantity: 0},
+				name:    "should return an error if quantity is zero",
+				args:    args{productID: "prod-123", productName: "Product Name", unitPrice: 10.0, quantity: 0},
 				wantErr: orderitem.ErrInvalidQuantity,
 			},
 			{
-				name:        "should return an error if quantity is negative",
-				args:        args{productID: "prod-123", productName: "Product Name", unitPrice: 10.0, quantity: -1},
+				name:    "should return an error if quantity is negative",
+				args:    args{productID: "prod-123", productName: "Product Name", unitPrice: 10.0, quantity: -1},
 				wantErr: orderitem.ErrInvalidQuantity,
 			},
 		}
@@ -105,23 +105,23 @@ func TestOrderItem_ApplyDiscount(t *testing.T) {
 			quantity  int
 		}
 		tests := []struct {
-			name               string
-			fields             fields
-			discount           float64
+			name           string
+			fields         fields
+			discount       float64
 			wantTotalPrice float64
 			wantErr        error
 		}{
 			{
-				name:               "should return an error when discount is negative",
-				fields:             fields{unitPrice: 10.0, quantity: 2},
-				discount:           -1.0,
+				name:           "should return an error when discount is negative",
+				fields:         fields{unitPrice: 10.0, quantity: 2},
+				discount:       -1.0,
 				wantTotalPrice: 20.0, // no change
 				wantErr:        orderitem.ErrNegativeDiscount,
 			},
 			{
-				name:               "should return an error when discount is greater than unit price",
-				fields:             fields{unitPrice: 10.0, quantity: 2},
-				discount:           11.0,
+				name:           "should return an error when discount is greater than unit price",
+				fields:         fields{unitPrice: 10.0, quantity: 2},
+				discount:       11.0,
 				wantTotalPrice: 20.0, // no change
 				wantErr:        orderitem.ErrDiscountExceedsUnitPrice,
 			},
@@ -148,23 +148,23 @@ func TestOrderItem_AddUnits(t *testing.T) {
 			quantity  int
 		}
 		tests := []struct {
-			name               string
-			fields             fields
-			units              int
+			name           string
+			fields         fields
+			units          int
 			wantQuantity   int
 			wantTotalPrice float64
 		}{
 			{
-				name:               "should add units when valid units are provided",
-				fields:             fields{unitPrice: 10.0, quantity: 2},
-				units:              3,
+				name:           "should add units when valid units are provided",
+				fields:         fields{unitPrice: 10.0, quantity: 2},
+				units:          3,
 				wantQuantity:   5,
 				wantTotalPrice: 50.0, // 10 * 5 = 50
 			},
 			{
-				name:               "should add single unit",
-				fields:             fields{unitPrice: 15.0, quantity: 1},
-				units:              1,
+				name:           "should add single unit",
+				fields:         fields{unitPrice: 15.0, quantity: 1},
+				units:          1,
 				wantQuantity:   2,
 				wantTotalPrice: 30.0, // 15 * 2 = 30
 			},
@@ -189,25 +189,25 @@ func TestOrderItem_AddUnits(t *testing.T) {
 			quantity  int
 		}
 		tests := []struct {
-			name               string
-			fields             fields
-			units              int
+			name           string
+			fields         fields
+			units          int
 			wantQuantity   int
 			wantTotalPrice float64
 			wantErr        error
 		}{
 			{
-				name:               "should return an error when units is zero",
-				fields:             fields{unitPrice: 10.0, quantity: 2},
-				units:              0,
+				name:           "should return an error when units is zero",
+				fields:         fields{unitPrice: 10.0, quantity: 2},
+				units:          0,
 				wantQuantity:   2,
 				wantTotalPrice: 20.0, // no change
 				wantErr:        orderitem.ErrInvalidUnits,
 			},
 			{
-				name:               "should return an error when units is negative",
-				fields:             fields{unitPrice: 10.0, quantity: 2},
-				units:              -1,
+				name:           "should return an error when units is negative",
+				fields:         fields{unitPrice: 10.0, quantity: 2},
+				units:          -1,
 				wantQuantity:   2,
 				wantTotalPrice: 20.0, // no change
 				wantErr:        orderitem.ErrInvalidUnits,
@@ -235,23 +235,23 @@ func TestOrderItem_RemoveUnits(t *testing.T) {
 			quantity  int
 		}
 		tests := []struct {
-			name               string
-			fields             fields
-			units              int
+			name           string
+			fields         fields
+			units          int
 			wantQuantity   int
 			wantTotalPrice float64
 		}{
 			{
-				name:               "should remove units when valid units are provided",
-				fields:             fields{unitPrice: 10.0, quantity: 5},
-				units:              2,
+				name:           "should remove units when valid units are provided",
+				fields:         fields{unitPrice: 10.0, quantity: 5},
+				units:          2,
 				wantQuantity:   3,
 				wantTotalPrice: 30.0, // 10 * 3 = 30
 			},
 			{
-				name:               "should remove single unit",
-				fields:             fields{unitPrice: 15.0, quantity: 3},
-				units:              1,
+				name:           "should remove single unit",
+				fields:         fields{unitPrice: 15.0, quantity: 3},
+				units:          1,
 				wantQuantity:   2,
 				wantTotalPrice: 30.0, // 15 * 2 = 30
 			},
@@ -276,41 +276,41 @@ func TestOrderItem_RemoveUnits(t *testing.T) {
 			quantity  int
 		}
 		tests := []struct {
-			name               string
-			fields             fields
-			units              int
+			name           string
+			fields         fields
+			units          int
 			wantQuantity   int
 			wantTotalPrice float64
 			wantErr        error
 		}{
 			{
-				name:               "should return an error when units is zero",
-				fields:             fields{unitPrice: 10.0, quantity: 2},
-				units:              0,
+				name:           "should return an error when units is zero",
+				fields:         fields{unitPrice: 10.0, quantity: 2},
+				units:          0,
 				wantQuantity:   2,
 				wantTotalPrice: 20.0, // no change
 				wantErr:        orderitem.ErrInvalidUnits,
 			},
 			{
-				name:               "should return an error when units is negative",
-				fields:             fields{unitPrice: 10.0, quantity: 2},
-				units:              -1,
+				name:           "should return an error when units is negative",
+				fields:         fields{unitPrice: 10.0, quantity: 2},
+				units:          -1,
 				wantQuantity:   2,
 				wantTotalPrice: 20.0, // no change
 				wantErr:        orderitem.ErrInvalidUnits,
 			},
 			{
-				name:               "should return an error when units to remove equals current quantity",
-				fields:             fields{unitPrice: 10.0, quantity: 2},
-				units:              2,
+				name:           "should return an error when units to remove equals current quantity",
+				fields:         fields{unitPrice: 10.0, quantity: 2},
+				units:          2,
 				wantQuantity:   2,
 				wantTotalPrice: 20.0, // no change
 				wantErr:        orderitem.ErrInsufficientQuantity,
 			},
 			{
-				name:               "should return an error when units to remove is greater than current quantity",
-				fields:             fields{unitPrice: 10.0, quantity: 2},
-				units:              5,
+				name:           "should return an error when units to remove is greater than current quantity",
+				fields:         fields{unitPrice: 10.0, quantity: 2},
+				units:          5,
 				wantQuantity:   2,
 				wantTotalPrice: 20.0, // no change
 				wantErr:        orderitem.ErrInsufficientQuantity,
@@ -338,23 +338,23 @@ func TestOrderItem_UpdateUnitPrice(t *testing.T) {
 			quantity  int
 		}
 		tests := []struct {
-			name               string
-			fields             fields
-			value              float64
+			name           string
+			fields         fields
+			value          float64
 			wantUnitPrice  float64
 			wantTotalPrice float64
 		}{
 			{
-				name:               "should update unit price when valid price is provided",
-				fields:             fields{unitPrice: 10.0, quantity: 2},
-				value:              15.0,
+				name:           "should update unit price when valid price is provided",
+				fields:         fields{unitPrice: 10.0, quantity: 2},
+				value:          15.0,
 				wantUnitPrice:  15.0,
 				wantTotalPrice: 30.0, // 15 * 2 = 30
 			},
 			{
-				name:               "should update unit price with decimal value",
-				fields:             fields{unitPrice: 10.0, quantity: 3},
-				value:              12.50,
+				name:           "should update unit price with decimal value",
+				fields:         fields{unitPrice: 10.0, quantity: 3},
+				value:          12.50,
 				wantUnitPrice:  12.50,
 				wantTotalPrice: 37.50, // 12.50 * 3 = 37.50
 			},
@@ -379,25 +379,25 @@ func TestOrderItem_UpdateUnitPrice(t *testing.T) {
 			quantity  int
 		}
 		tests := []struct {
-			name               string
-			fields             fields
-			value              float64
+			name           string
+			fields         fields
+			value          float64
 			wantUnitPrice  float64
 			wantTotalPrice float64
 			wantErr        error
 		}{
 			{
-				name:               "should return an error when unit price is zero",
-				fields:             fields{unitPrice: 10.0, quantity: 2},
-				value:              0.0,
+				name:           "should return an error when unit price is zero",
+				fields:         fields{unitPrice: 10.0, quantity: 2},
+				value:          0.0,
 				wantUnitPrice:  10.0, // no change
 				wantTotalPrice: 20.0, // no change
 				wantErr:        orderitem.ErrInvalidUnitPrice,
 			},
 			{
-				name:               "should return an error when unit price is negative",
-				fields:             fields{unitPrice: 10.0, quantity: 2},
-				value:              -5.0,
+				name:           "should return an error when unit price is negative",
+				fields:         fields{unitPrice: 10.0, quantity: 2},
+				value:          -5.0,
 				wantUnitPrice:  10.0, // no change
 				wantTotalPrice: 20.0, // no change
 				wantErr:        orderitem.ErrInvalidUnitPrice,
@@ -420,9 +420,9 @@ func TestOrderItem_UpdateUnitPrice(t *testing.T) {
 
 func TestOrderItem_Equals(t *testing.T) {
 	tests := []struct {
-		name     string
-		setup    func(t *testing.T) (oi, other *orderitem.OrderItem)
-		want     bool
+		name  string
+		setup func(t *testing.T) (oi, other *orderitem.OrderItem)
+		want  bool
 	}{
 		// ==================== Success cases ==================== //
 		{
@@ -431,7 +431,7 @@ func TestOrderItem_Equals(t *testing.T) {
 				oi := createValidOrderItem(t, 10.0, 2)
 				return oi, oi
 			},
-			want:     true,
+			want: true,
 		},
 		{
 			name: "should return true when order items have same ID",
@@ -439,7 +439,7 @@ func TestOrderItem_Equals(t *testing.T) {
 				return &orderitem.OrderItem{ID: "same-id", ProductID: "prod-1", ProductName: "Product A", UnitPrice: 10.0, Quantity: 2},
 					&orderitem.OrderItem{ID: "same-id", ProductID: "prod-2", ProductName: "Product B", UnitPrice: 20.0, Quantity: 5}
 			},
-			want:     true,
+			want: true,
 		},
 		// ==================== Failure cases ==================== //
 		{
@@ -447,7 +447,7 @@ func TestOrderItem_Equals(t *testing.T) {
 			setup: func(t *testing.T) (*orderitem.OrderItem, *orderitem.OrderItem) {
 				return createValidOrderItem(t, 10.0, 2), nil
 			},
-			want:     false,
+			want: false,
 		},
 		{
 			name: "should return false when order items have different IDs",
@@ -455,7 +455,7 @@ func TestOrderItem_Equals(t *testing.T) {
 				return &orderitem.OrderItem{ID: "id-1", ProductID: "prod-1", ProductName: "Product A", UnitPrice: 10.0, Quantity: 2},
 					&orderitem.OrderItem{ID: "id-2", ProductID: "prod-1", ProductName: "Product A", UnitPrice: 10.0, Quantity: 2}
 			},
-			want:     false,
+			want: false,
 		},
 	}
 	for _, tt := range tests {
