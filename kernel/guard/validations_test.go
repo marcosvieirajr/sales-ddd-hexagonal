@@ -1,11 +1,11 @@
-package shared_test
+package guard_test
 
 import (
 	"fmt"
 	"regexp"
 	"testing"
 
-	"github.com/marcosvieirajr/sales-ddd-hexagonal/shared"
+	"github.com/marcosvieirajr/sales-ddd-hexagonal/kernel/guard"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -37,7 +37,7 @@ func TestCheckMatchRegex(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := shared.CheckMatchRegex(tt.value, digitRegex, sentinelErr)
+			err := guard.CheckMatchRegex(tt.value, digitRegex, sentinelErr)
 			assert.Equal(t, tt.wantErr, err)
 		})
 	}
@@ -72,7 +72,7 @@ func TestCheckNotNullOrWhiteSpace(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := shared.CheckNotNullOrWhiteSpace(tt.value, sentinelErr)
+			err := guard.CheckNotNullOrWhiteSpace(tt.value, sentinelErr)
 			assert.Equal(t, tt.wantErr, err)
 		})
 	}
@@ -107,7 +107,7 @@ func TestCheckNotZeroOrNegative(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := shared.CheckNotZeroOrNegative(tt.value, sentinelErr)
+			err := guard.CheckNotZeroOrNegative(tt.value, sentinelErr)
 			assert.Equal(t, tt.wantErr, err)
 		})
 	}
@@ -140,7 +140,7 @@ func TestCheckNotNil(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := shared.CheckNotNil(tt.value, sentinelErr)
+			err := guard.CheckNotNil(tt.value, sentinelErr)
 			assert.Equal(t, tt.wantErr, err)
 		})
 	}
@@ -173,7 +173,7 @@ func TestCheckNil(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := shared.CheckNil(tt.value, sentinelErr)
+			err := guard.CheckNil(tt.value, sentinelErr)
 			assert.Equal(t, tt.wantErr, err)
 		})
 	}

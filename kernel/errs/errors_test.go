@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/marcosvieirajr/sales-ddd-hexagonal/shared/errs"
+	"github.com/marcosvieirajr/sales-ddd-hexagonal/kernel/errs"
 	"github.com/stretchr/testify/assert"
 )
 

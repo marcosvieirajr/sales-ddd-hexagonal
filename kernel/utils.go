@@ -1,4 +1,4 @@
-package shared
+package kernel
 
 // Must is a convenience generic function that returns x if err is nil,
 // or panics with err otherwise. It is intended for use in package-level

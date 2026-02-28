@@ -1,4 +1,4 @@
-module github.com/marcosvieirajr/sales-ddd-hexagonal/shared
+module github.com/marcosvieirajr/sales-ddd-hexagonal/kernel
 
 go 1.25.0
 

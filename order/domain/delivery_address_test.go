@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/marcosvieirajr/sales-ddd-hexagonal/order/domain"
-	"github.com/marcosvieirajr/sales-ddd-hexagonal/shared"
+	"github.com/marcosvieirajr/sales-ddd-hexagonal/kernel"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -39,7 +39,7 @@ func TestNewDeliveryAddress(t *testing.T) {
 					state:      "BA",
 					country:    "Country",
 				},
-				want: shared.Must(order.NewDeliveryAddress(
+				want: kernel.Must(order.NewDeliveryAddress(
 					"12345-678",
 					"Street",
 					"123",
@@ -62,7 +62,7 @@ func TestNewDeliveryAddress(t *testing.T) {
 					state:      "BA",
 					country:    "Country",
 				},
-				want: shared.Must(order.NewDeliveryAddress(
+				want: kernel.Must(order.NewDeliveryAddress(
 					"12345-678",
 					"Street",
 					"123",
@@ -225,7 +225,7 @@ func TestNewDeliveryAddress(t *testing.T) {
 }
 
 func TestDeliveryAddress_Equals(t *testing.T) {
-	baseAddr := shared.Must(order.NewDeliveryAddress(
+	baseAddr := kernel.Must(order.NewDeliveryAddress(
 		"12345-678", "Street", "123", "",
 		"District", "City", "BA", "Country",
 	))
@@ -237,12 +237,12 @@ func TestDeliveryAddress_Equals(t *testing.T) {
 	}{
 		{
 			name:  "should return true for equal delivery addresses",
-			other: shared.Must(order.NewDeliveryAddress("12345-678", "Street", "123", "", "District", "City", "BA", "Country")),
+			other: kernel.Must(order.NewDeliveryAddress("12345-678", "Street", "123", "", "District", "City", "BA", "Country")),
 			want:  true,
 		},
 		{
 			name:  "should return false for different delivery addresses",
-			other: shared.Must(order.NewDeliveryAddress("12345-678", "Street n2", "123", "", "District", "City", "BA", "Country")),
+			other: kernel.Must(order.NewDeliveryAddress("12345-678", "Street n2", "123", "", "District", "City", "BA", "Country")),
 			want:  false,
 		},
 		{

@@ -4,8 +4,9 @@ import (
 	"errors"
 	"time"
 
-	"github.com/marcosvieirajr/sales-ddd-hexagonal/shared"
-	"github.com/marcosvieirajr/sales-ddd-hexagonal/shared/errs"
+	"github.com/marcosvieirajr/sales-ddd-hexagonal/kernel"
+	"github.com/marcosvieirajr/sales-ddd-hexagonal/kernel/errs"
+	"github.com/marcosvieirajr/sales-ddd-hexagonal/kernel/guard"
 )
 
 var (
@@ -43,16 +44,16 @@ type OrderItem struct {
 // single joined error, allowing callers to inspect every failure via [errors.Is].
 func NewOrderItem(productID, productName string, unitPrice float64, quantity int) (*OrderItem, error) {
 	if err := errors.Join(
-		shared.CheckNotNullOrWhiteSpace(productID, ErrInvalidProductID),
-		shared.CheckNotNullOrWhiteSpace(productName, ErrInvalidProductName),
-		shared.CheckNotZeroOrNegative(unitPrice, ErrInvalidUnitPrice),
-		shared.CheckNotZeroOrNegative(float64(quantity), ErrInvalidQuantity),
+		guard.CheckNotNullOrWhiteSpace(productID, ErrInvalidProductID),
+		guard.CheckNotNullOrWhiteSpace(productName, ErrInvalidProductName),
+		guard.CheckNotZeroOrNegative(unitPrice, ErrInvalidUnitPrice),
+		guard.CheckNotZeroOrNegative(float64(quantity), ErrInvalidQuantity),
 	); err != nil {
 		return nil, err
 	}
 
 	oi := OrderItem{
-		ID:          shared.GenerateID(),
+		ID:          kernel.GenerateID(),
 		ProductID:   productID,
 		ProductName: productName,
 		UnitPrice:   unitPrice,

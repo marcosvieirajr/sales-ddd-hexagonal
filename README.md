@@ -11,7 +11,7 @@ A reference implementation of **Domain-Driven Design (DDD)** tactical patterns c
 | | |
 |---|---|
 | **Language** | Go 1.25 |
-| **Module** | `github.com/marcosvieirajr/sales-ddd-hexagonal` |
+| **Workspace** | Go Workspace (`go.work`) — 6 modules |
 | **Core Domain** | Order Management |
 | **Architecture** | DDD + Hexagonal (Ports & Adapters) |
 
@@ -58,44 +58,53 @@ graph BT
 
 Context relationships: Order Management is **downstream** (Customer-Supplier + ACL) from both Catalog and Customer contexts. Catalog and Customer are **Separate Ways** — no direct dependency between them.
 
+Additional modules — `inventory/` (Inventory BC) and `notification/` (Notification BC) — exist as scaffold placeholders and are not yet integrated into the context map.
+
 ---
 
-## Domain Package Structure
+## Repository Structure
 
 ```
-domain/
+go.work                             — workspace: shared, order, customer, catalog, inventory, notification
+
+shared/                             — Shared Kernel (module: .../shared)
 │
 ├── errs/
-│   └── errors.go              — DomainError with typed ErrorCode (AGGREGATE.REASON)
+│   └── errors.go                   — DomainError with typed ErrorCode (AGGREGATE.REASON)
 │
 ├── types/
-│   ├── sex.go                 — Sex enum (NotInformed, Male, Female, Other)
-│   └── status_marital.go      — MaritalStatus enum
+│   ├── sex.go                      — Sex enum (NotInformed, Male, Female, Other)
+│   └── status_marital.go           — MaritalStatus enum
 │
-├── utils.go                   — Must[T]() generic helper; GenerateID() stub
-├── validations.go             — Guard functions used across all entities:
-│                                CheckNotNullOrWhiteSpace, CheckNotZeroOrNegative,
-│                                CheckMatchRegex, CheckNotNil, CheckNil
+├── utils.go                        — Must[T]() generic helper; GenerateID() stub   (package shared)
+└── validations.go                  — CheckNotNullOrWhiteSpace, CheckNotZeroOrNegative,
+                                      CheckMatchRegex, CheckNotNil, CheckNil   (package shared)
+
+order/                              — Order Management BC (Core Domain ★) (module: .../order)
 │
-└── order/                     — Order Management bounded context
-    │
-    ├── order.go               — Order aggregate root [WIP]
-    ├── order_status.go        — OrderStatus enum: Created → Paid → Separating → Shipped → Delivered | Cancelled
-    ├── delivery_address.go    — DeliveryAddress value object (immutable, Brazilian CEP format)
+└── domain/
+    ├── order.go                    — Order aggregate root [WIP]
+    ├── order_status.go             — OrderStatus enum: Created → Paid → Separating → Shipped → Delivered | Cancelled
+    ├── delivery_address.go         — DeliveryAddress value object (immutable, Brazilian CEP format)
     │
     ├── orderitem/
-    │   └── order_item.go      — OrderItem entity (child of Order aggregate)
-    │                            Fields: ProductID, ProductName, UnitPrice, Quantity, DiscountApplied, TotalPrice
-    │                            Methods: NewOrderItem, ApplyDiscount, AddUnits, RemoveUnits, UpdateUnitPrice
+    │   └── order_item.go           — OrderItem entity (child of Order aggregate)
+    │                                 Fields: ProductID, ProductName, UnitPrice, Quantity, DiscountApplied, TotalPrice
+    │                                 Methods: NewOrderItem, ApplyDiscount, AddUnits, RemoveUnits, UpdateUnitPrice
     │
     └── payment/
-        ├── payment.go                  — Payment entity with state machine
-        │                                 State: Pending → Authorized | Refused
-        │                                 Must call DefineTransactionCode before confirming/refusing
-        ├── payment_method.go           — PaymentMethod enum: CreditCard, DebitCard, Cash, Pix, BankTransfer, BancSlip
-        ├── payment_status.go           — PaymentStatus enum: Pending, Authorized, Refused, Refunded, Cancelled
-        ├── payment_approved_event.go   — ApprovedEvent domain event
-        └── payment_refused_event.go    — RefusedEvent domain event + base Event struct
+        ├── payment.go              — Payment entity with state machine
+        │                             State: Pending → Authorized | Refused
+        │                             Must call DefineTransactionCode before confirming/refusing
+        ├── payment_method.go       — PaymentMethod enum: CreditCard, DebitCard, Cash, Pix, BankTransfer, BancSlip
+        ├── payment_status.go       — PaymentStatus enum: Pending, Authorized, Refused, Refunded, Cancelled
+        ├── payment_approved_event.go — ApprovedEvent domain event
+        └── payment_refused_event.go  — RefusedEvent domain event + base Event struct
+
+customer/                           — Customer Management BC (scaffold)
+catalog/                            — Catalog Management BC (scaffold)
+inventory/                          — Inventory BC (scaffold, placeholder)
+notification/                       — Notification BC (scaffold, placeholder)
 ```
 
 ---
@@ -110,8 +119,8 @@ var ErrInvalidProductID = errs.New("ORDER_ITEM.INVALID_PRODUCT_ID", "product ID 
 
 // Multiple validation failures collected:
 return errors.Join(
-    domain.CheckNotNullOrWhiteSpace(productID, ErrInvalidProductID),
-    domain.CheckNotZeroOrNegative(unitPrice, ErrInvalidUnitPrice),
+    shared.CheckNotNullOrWhiteSpace(productID, ErrInvalidProductID),
+    shared.CheckNotZeroOrNegative(unitPrice, ErrInvalidUnitPrice),
 )
 
 // Test with errors.Is (compares by ErrorCode, not pointer):
@@ -163,18 +172,20 @@ type ApprovedEvent struct {
 ## Getting Started
 
 ```bash
-# Run all tests
+# Run all tests (workspace)
 go test ./...
+# or using Makefile
+make test
 
 # Run tests with verbose output
 go test -v ./...
 
 # Run tests for a specific package
-go test ./domain/order/orderitem/...
-go test ./domain/order/payment/...
+go test ./order/domain/orderitem/...
+go test ./order/domain/payment/...
 
 # Run a single test by name
-go test ./domain/order/payment/... -run TestPayment_ConfirmPayment
+go test ./order/domain/payment/... -run TestPayment_ConfirmPayment
 
 # Build
 go build ./...
@@ -213,3 +224,4 @@ Full DDD rules, pattern definitions, and architectural decisions applied in this
 |---|---|
 | `github.com/stretchr/testify` | Test assertions (`assert`, `require`) |
 | `github.com/google/go-cmp` | Struct comparison with `cmpopts.IgnoreFields` |
+| `Makefile` | Convenience targets (`make test`, `make build`, `make lint`) |

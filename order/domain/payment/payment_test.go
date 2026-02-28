@@ -6,14 +6,14 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/marcosvieirajr/sales-ddd-hexagonal/order/domain/payment"
-	"github.com/marcosvieirajr/sales-ddd-hexagonal/shared"
+	"github.com/marcosvieirajr/sales-ddd-hexagonal/kernel"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func createValidPayment(t *testing.T) *payment.Payment {
 	t.Helper()
-	return shared.Must(payment.NewPayment("order-123", 100.0, payment.MethodCreditCard))
+	return kernel.Must(payment.NewPayment("order-123", 100.0, payment.MethodCreditCard))
 }
 
 func createPaymentWithCode(t *testing.T) *payment.Payment {

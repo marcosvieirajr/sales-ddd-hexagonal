@@ -6,14 +6,14 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/marcosvieirajr/sales-ddd-hexagonal/order/domain/orderitem"
-	"github.com/marcosvieirajr/sales-ddd-hexagonal/shared"
+	"github.com/marcosvieirajr/sales-ddd-hexagonal/kernel"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func createValidOrderItem(t *testing.T, unitPrice float64, quantity int) *orderitem.OrderItem {
 	t.Helper()
-	return shared.Must(orderitem.NewOrderItem("prod-123", "Test Product", unitPrice, quantity))
+	return kernel.Must(orderitem.NewOrderItem("prod-123", "Test Product", unitPrice, quantity))
 }
 
 func TestNewOrderItem(t *testing.T) {
