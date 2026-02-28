@@ -40,6 +40,11 @@ func (m Method) MarshalText() ([]byte, error) {
 	return []byte(m.String()), nil
 }
 
+// Equals checks if two Method values are equal.
+func (m Method) Equals(other Method) bool {
+	return m == other
+}
+
 // ParseMethod converts an int to the corresponding Method value.
 // If the input does not match any known method, it returns an error and an empty Method value.
 func ParseMethod(value int) (Method, error) {
