@@ -1,0 +1,19 @@
+[tools]
+go = "1.26"
+
+[tasks.test]
+description = "Run all tests"
+run = "go test ./catalog/... ./customer/... ./order/... ./kernel/..."
+
+[tasks."test:verbose"]
+alias = "test-verbose"
+description = "Run all tests with verbose output"
+run = "go test -v ./catalog/... ./customer/... ./order/... ./kernel/..."
+
+[tasks."test:coverage"]
+alias = "test-coverage"
+description = "Generate coverage report (coverage.html)"
+run = [
+  "go test -coverprofile=coverage.out ./catalog/... ./customer/... ./order/... ./kernel/...",
+  "go tool cover -html=coverage.out -o coverage.html",
+]
