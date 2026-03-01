@@ -5,16 +5,16 @@ import "github.com/marcosvieirajr/sales-ddd-hexagonal/kernel/errs"
 var ErrInvalidPaymentMethod = errs.New("PAYMENT.INVALID_METHOD", "invalid payment method")
 
 // Method represents the payment method chosen by the customer.
-type Method int
+type Method struct{ value int }
 
-// Define constants for each payment method, starting from 1 to avoid the zero value which can be used as a default or uninitialized state.
-const (
-	MethodCreditCard   Method = iota + 1 // MethodCreditCard represents payment by credit card.
-	MethodDebitCard                      // MethodDebitCard represents payment by debit card.
-	MethodCash                           // MethodCash represents payment in cash.
-	MethodPix                            // MethodPix represents payment via Pix instant transfer.
-	MethodBankTransfer                   // MethodBankTransfer represents payment via bank transfer (TED/DOC).
-	MethodBancSlip                       // MethodBancSlip represents payment via bank slip (boleto bancário).
+// Define vars for each payment method, starting from 1 to avoid the zero value which can be used as a default or uninitialized state.
+var (
+	MethodCreditCard   = Method{1} // MethodCreditCard represents payment by credit card.
+	MethodDebitCard    = Method{2} // MethodDebitCard represents payment by debit card.
+	MethodCash         = Method{3} // MethodCash represents payment in cash.
+	MethodPix          = Method{4} // MethodPix represents payment via Pix instant transfer.
+	MethodBankTransfer = Method{5} // MethodBankTransfer represents payment via bank transfer (TED/DOC).
+	MethodBancSlip     = Method{6} // MethodBancSlip represents payment via bank slip (boleto bancário).
 )
 
 // methodToString maps Method values to their string representations.
@@ -42,15 +42,15 @@ func (m Method) MarshalText() ([]byte, error) {
 
 // Equals checks if two Method values are equal.
 func (m Method) Equals(other Method) bool {
-	return m == other
+	return m.value == other.value
 }
 
 // ParseMethod converts an int to the corresponding Method value.
 // If the input does not match any known method, it returns an error and an empty Method value.
 func ParseMethod(value int) (Method, error) {
-	method := Method(value)
-	if _, ok := methodToString[method]; !ok {
-		return 0, ErrInvalidPaymentMethod
+	m := Method{value}
+	if _, ok := methodToString[m]; !ok {
+		return Method{}, ErrInvalidPaymentMethod
 	}
-	return method, nil
+	return m, nil
 }

@@ -5,8 +5,8 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
-	"github.com/marcosvieirajr/sales-ddd-hexagonal/order/domain/payment"
 	"github.com/marcosvieirajr/sales-ddd-hexagonal/kernel"
+	"github.com/marcosvieirajr/sales-ddd-hexagonal/order/domain/payment"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -35,7 +35,8 @@ func TestNewPayment(t *testing.T) {
 			Status:  payment.StatusPending,
 		}
 		ignoreFields := cmpopts.IgnoreFields(payment.Payment{}, "ID") // ignore ID since it's generated and not predictable
-		assert.True(t, cmp.Equal(got, want, ignoreFields), "got and want should be equal ignoring ID: %v", cmp.Diff(got, want, ignoreFields))
+		equatable := cmpopts.EquateComparable(payment.Method{}, payment.Status{})
+		assert.True(t, cmp.Equal(got, want, ignoreFields, equatable), "got and want should be equal ignoring ID: %v", cmp.Diff(got, want, ignoreFields, equatable))
 	})
 
 	t.Run("should return an error when invalid input is provided", func(t *testing.T) {

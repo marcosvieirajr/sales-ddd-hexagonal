@@ -21,7 +21,7 @@ func TestStatus_String(t *testing.T) {
 		{name: "should return 'refunded' for StatusRefunded", status: payment.StatusRefunded, want: "refunded"},
 		{name: "should return 'cancelled' for StatusCancelled", status: payment.StatusCancelled, want: "cancelled"},
 		// ==================== Failure cases ==================== //
-		{name: "should return 'unknown' for an unrecognized status value", status: payment.Status(999), want: "unknown"},
+		{name: "should return 'unknown' for an unrecognized status value", status: payment.Status{}, want: "unknown"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -40,7 +40,7 @@ func TestStatus_MarshalText(t *testing.T) {
 	}{
 		{name: "should marshal StatusPending to 'pending'", status: payment.StatusPending, want: "pending"},
 		{name: "should marshal StatusAuthorized to 'authorized'", status: payment.StatusAuthorized, want: "authorized"},
-		{name: "should marshal unknown status to 'unknown'", status: payment.Status(999), want: "unknown"},
+		{name: "should marshal unknown status to 'unknown'", status: payment.Status{}, want: "unknown"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -64,7 +64,7 @@ func TestStatus_Equals(t *testing.T) {
 		{name: "should return true when comparing the same Authorized status", status: payment.StatusAuthorized, other: payment.StatusAuthorized, want: true},
 		// ==================== Failure cases ==================== //
 		{name: "should return false when statuses are different", status: payment.StatusPending, other: payment.StatusAuthorized, want: false},
-		{name: "should return false when comparing with an uninitialized status", status: payment.StatusPending, other: payment.Status(0), want: false},
+		{name: "should return false when comparing with an uninitialized status", status: payment.StatusPending, other: payment.Status{}, want: false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -112,7 +112,7 @@ func TestParseStatus(t *testing.T) {
 
 			require.Error(t, err)
 			assert.ErrorIs(t, err, tt.wantErr)
-			assert.Equal(t, payment.Status(0), got)
+			assert.Equal(t, payment.Status{}, got)
 		})
 	}
 }

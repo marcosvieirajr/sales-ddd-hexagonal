@@ -22,8 +22,7 @@ func TestMethod_String(t *testing.T) {
 		{name: "should return 'bank_transfer' for MethodBankTransfer", method: payment.MethodBankTransfer, want: "bank_transfer"},
 		{name: "should return 'banc_slip' for MethodBancSlip", method: payment.MethodBancSlip, want: "banc_slip"},
 		// ==================== Failure cases ==================== //
-		{name: "should return 'unknown' for an unrecognized method value", method: payment.Method(999), want: "unknown"},
-		{name: "should return 'unknown' for zero value (uninitialized)", method: payment.Method(0), want: "unknown"},
+		{name: "should return 'unknown' for zero value (uninitialized)", method: payment.Method{}, want: "unknown"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -42,7 +41,7 @@ func TestMethod_MarshalText(t *testing.T) {
 	}{
 		{name: "should marshal MethodCreditCard to 'credit_card'", method: payment.MethodCreditCard, want: "credit_card"},
 		{name: "should marshal MethodPix to 'pix'", method: payment.MethodPix, want: "pix"},
-		{name: "should marshal unknown method to 'unknown'", method: payment.Method(999), want: "unknown"},
+		{name: "should marshal unknown method to 'unknown'", method: payment.Method{}, want: "unknown"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -66,7 +65,7 @@ func TestMethod_Equals(t *testing.T) {
 		{name: "should return true when comparing the same Pix method", method: payment.MethodPix, other: payment.MethodPix, want: true},
 		// ==================== Failure cases ==================== //
 		{name: "should return false when methods are different", method: payment.MethodCreditCard, other: payment.MethodDebitCard, want: false},
-		{name: "should return false when comparing with an uninitialized method", method: payment.MethodCreditCard, other: payment.Method(0), want: false},
+		{name: "should return false when comparing with an uninitialized method", method: payment.MethodCreditCard, other: payment.Method{}, want: false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -116,7 +115,7 @@ func TestParseMethod(t *testing.T) {
 
 			require.Error(t, err)
 			assert.ErrorIs(t, err, tt.wantErr)
-			assert.Equal(t, payment.Method(0), got)
+			assert.Equal(t, payment.Method{}, got)
 		})
 	}
 }

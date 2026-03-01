@@ -5,15 +5,15 @@ import "github.com/marcosvieirajr/sales-ddd-hexagonal/kernel/errs"
 var ErrInvalidPaymentStatus = errs.New("PAYMENT.INVALID_STATUS", "invalid payment status")
 
 // Status represents the lifecycle state of a [Payment].
-type Status int
+type Status struct{ value int }
 
-// Define constants for each payment status, starting from 0 to use the zero value as the initial pending state.
-const (
-	StatusPending    Status = iota + 1 // StatusPending is the initial state; payment is awaiting processing.
-	StatusAuthorized                   // StatusAuthorized indicates the payment was successfully confirmed.
-	StatusRefused                      // StatusRefused indicates the payment was declined by the gateway.
-	StatusRefunded                     // StatusRefunded indicates a previously authorized payment was refunded.
-	StatusCancelled                    // StatusCancelled indicates the payment was cancelled before completion.
+// Define vars for each payment status, starting from 1 to avoid the zero value which can be used as a default or uninitialized state.
+var (
+	StatusPending    = Status{1} // StatusPending is the initial state; payment is awaiting processing.
+	StatusAuthorized = Status{2} // StatusAuthorized indicates the payment was successfully confirmed.
+	StatusRefused    = Status{3} // StatusRefused indicates the payment was declined by the gateway.
+	StatusRefunded   = Status{4} // StatusRefunded indicates a previously authorized payment was refunded.
+	StatusCancelled  = Status{5} // StatusCancelled indicates the payment was cancelled before completion.
 )
 
 // statusToString maps Status values to their string representations.
@@ -40,15 +40,15 @@ func (s Status) MarshalText() ([]byte, error) {
 
 // Equals checks if two Status values are equal.
 func (s Status) Equals(other Status) bool {
-	return s == other
+	return s.value == other.value
 }
 
 // ParseStatus converts an int to the corresponding Status value.
 // If the input does not match any known status, it returns an error and an empty Status value.
 func ParseStatus(value int) (Status, error) {
-	status := Status(value)
-	if _, ok := statusToString[status]; !ok {
-		return 0, ErrInvalidPaymentStatus
+	s := Status{value}
+	if _, ok := statusToString[s]; !ok {
+		return Status{}, ErrInvalidPaymentStatus
 	}
-	return status, nil
+	return s, nil
 }
