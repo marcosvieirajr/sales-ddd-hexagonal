@@ -22,7 +22,7 @@ func TestMust(t *testing.T) {
 	})
 }
 
-func TestGenerateID(t *testing.T) {
-	id := kernel.GenerateID()
-	assert.NotEmpty(t, id)
+func TestNewID(t *testing.T) {
+	id := kernel.NewID()
+	assert.NotZero(t, id)
 }

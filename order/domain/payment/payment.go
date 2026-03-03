@@ -50,7 +50,7 @@ func NewPayment(orderID string, amount float64, method Method) (*Payment, error)
 	}
 
 	return &Payment{
-		ID:      kernel.GenerateID(),
+		ID:      kernel.NewID().String(),
 		OrderID: orderID,
 		Method:  method,
 		Status:  StatusPending,
@@ -147,6 +147,6 @@ func (p *Payment) generateTransactionCode() {
 		return
 	}
 
-	c := `LOCAL-` + kernel.GenerateID()
+	c := `LOCAL-` + kernel.NewID().String()
 	_ = p.DefineTransactionCode(c)
 }

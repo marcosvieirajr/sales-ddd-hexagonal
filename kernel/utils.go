@@ -1,5 +1,9 @@
 package kernel
 
+import (
+	"github.com/oklog/ulid/v2"
+)
+
 // Must is a convenience generic function that returns x if err is nil,
 // or panics with err otherwise. It is intended for use in package-level
 // variable initialization where a non-nil error indicates an unrecoverable
@@ -11,8 +15,8 @@ func Must[T any](x T, err error) T {
 	return x
 }
 
-// GenerateID returns a new unique identifier string for domain entities.
-// TODO: replace the stub implementation with a proper generator (e.g. UUID or ULID).
-func GenerateID() string {
-	return "12345678-1234-5678-1234-567812345678"
+// NewID returns a new unique, lexicographically sortable, and
+// monotonically increasing identifier. Safe for concurrent use.
+func NewID() ulid.ULID {
+	return ulid.Make()
 }

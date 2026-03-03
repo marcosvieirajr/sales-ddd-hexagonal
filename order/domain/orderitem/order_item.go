@@ -53,7 +53,7 @@ func NewOrderItem(productID, productName string, unitPrice float64, quantity int
 	}
 
 	oi := OrderItem{
-		ID:          kernel.GenerateID(),
+		ID:          kernel.NewID().String(),
 		ProductID:   productID,
 		ProductName: productName,
 		UnitPrice:   unitPrice,
