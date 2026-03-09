@@ -35,6 +35,7 @@ func TestDomainError_Error(t *testing.T) {
 		err  *errs.DomainError
 		want string
 	}{
+		// ==================== Success cases ==================== //
 		{
 			name: "should format error without underlying error",
 			err:  errs.New("TEST.CODE", "test message"),
@@ -48,7 +49,9 @@ func TestDomainError_Error(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			assert.Equal(t, tt.want, tt.err.Error())
+			got := tt.err.Error()
+
+			assert.Equal(t, tt.want, got)
 		})
 	}
 }
@@ -70,6 +73,7 @@ func TestDomainError_Is(t *testing.T) {
 		target error
 		want   bool
 	}{
+		// ==================== Success cases ==================== //
 		{
 			name:   "should match errors with the same code",
 			err:    sentinel,
@@ -82,6 +86,7 @@ func TestDomainError_Is(t *testing.T) {
 			target: sentinel,
 			want:   true,
 		},
+		// ==================== Failure cases ==================== //
 		{
 			name:   "should not match errors with different codes",
 			err:    sentinel,
@@ -97,7 +102,9 @@ func TestDomainError_Is(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			assert.Equal(t, tt.want, errors.Is(tt.err, tt.target))
+			got := errors.Is(tt.err, tt.target)
+
+			assert.Equal(t, tt.want, got)
 		})
 	}
 }

@@ -39,8 +39,10 @@ func TestStatus_MarshalText(t *testing.T) {
 		status order.Status
 		want   string
 	}{
+		// ==================== Success cases ==================== //
 		{name: "should marshal StatusCreated to 'created'", status: order.StatusCreated, want: "created"},
 		{name: "should marshal StatusPaid to 'paid'", status: order.StatusPaid, want: "paid"},
+		// ==================== Failure cases ==================== //
 		{name: "should marshal unknown status to 'unknown'", status: order.Status{}, want: "unknown"},
 	}
 	for _, tt := range tests {

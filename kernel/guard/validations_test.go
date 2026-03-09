@@ -19,11 +19,13 @@ func TestCheckMatchRegex(t *testing.T) {
 		value   string
 		wantErr error
 	}{
+		// ==================== Success cases ==================== //
 		{
 			name:    "should return nil when value matches regex",
 			value:   "12345",
 			wantErr: nil,
 		},
+		// ==================== Failure cases ==================== //
 		{
 			name:    "should return error when value does not match regex",
 			value:   "abc",
@@ -38,6 +40,7 @@ func TestCheckMatchRegex(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			err := guard.CheckMatchRegex(tt.value, digitRegex, sentinelErr)
+
 			assert.Equal(t, tt.wantErr, err)
 		})
 	}
@@ -49,11 +52,13 @@ func TestCheckNotNullOrWhiteSpace(t *testing.T) {
 		value   string
 		wantErr error
 	}{
+		// ==================== Success cases ==================== //
 		{
 			name:    "should return nil when value is non-empty",
 			value:   "valid string",
 			wantErr: nil,
 		},
+		// ==================== Failure cases ==================== //
 		{
 			name:    "should return error when value is empty",
 			value:   "",
@@ -73,6 +78,7 @@ func TestCheckNotNullOrWhiteSpace(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			err := guard.CheckNotNullOrWhiteSpace(tt.value, sentinelErr)
+
 			assert.Equal(t, tt.wantErr, err)
 		})
 	}
@@ -84,6 +90,7 @@ func TestCheckNotZeroOrNegative(t *testing.T) {
 		value   float64
 		wantErr error
 	}{
+		// ==================== Success cases ==================== //
 		{
 			name:    "should return nil when value is positive",
 			value:   1.0,
@@ -94,6 +101,7 @@ func TestCheckNotZeroOrNegative(t *testing.T) {
 			value:   0.001,
 			wantErr: nil,
 		},
+		// ==================== Failure cases ==================== //
 		{
 			name:    "should return error when value is zero",
 			value:   0.0,
@@ -108,6 +116,7 @@ func TestCheckNotZeroOrNegative(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			err := guard.CheckNotZeroOrNegative(tt.value, sentinelErr)
+
 			assert.Equal(t, tt.wantErr, err)
 		})
 	}
@@ -122,11 +131,13 @@ func TestCheckNotNil(t *testing.T) {
 		value   any
 		wantErr error
 	}{
+		// ==================== Success cases ==================== //
 		{
 			name:    "should return nil when value is non-nil",
 			value:   &nonNilValue,
 			wantErr: nil,
 		},
+		// ==================== Failure cases ==================== //
 		{
 			name:    "should return error when value is untyped nil",
 			value:   nil,
@@ -141,6 +152,7 @@ func TestCheckNotNil(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			err := guard.CheckNotNil(tt.value, sentinelErr)
+
 			assert.Equal(t, tt.wantErr, err)
 		})
 	}
@@ -155,6 +167,7 @@ func TestCheckNil(t *testing.T) {
 		value   any
 		wantErr error
 	}{
+		// ==================== Success cases ==================== //
 		{
 			name:    "should return nil when value is untyped nil",
 			value:   nil,
@@ -165,6 +178,7 @@ func TestCheckNil(t *testing.T) {
 			value:   typedNilPtr,
 			wantErr: nil,
 		},
+		// ==================== Failure cases ==================== //
 		{
 			name:    "should return error when value is non-nil",
 			value:   &nonNilValue,
@@ -174,6 +188,7 @@ func TestCheckNil(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			err := guard.CheckNil(tt.value, sentinelErr)
+
 			assert.Equal(t, tt.wantErr, err)
 		})
 	}

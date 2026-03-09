@@ -39,8 +39,10 @@ func TestMethod_MarshalText(t *testing.T) {
 		method payment.Method
 		want   string
 	}{
+		// ==================== Success cases ==================== //
 		{name: "should marshal MethodCreditCard to 'credit_card'", method: payment.MethodCreditCard, want: "credit_card"},
 		{name: "should marshal MethodPix to 'pix'", method: payment.MethodPix, want: "pix"},
+		// ==================== Failure cases ==================== //
 		{name: "should marshal unknown method to 'unknown'", method: payment.Method{}, want: "unknown"},
 	}
 	for _, tt := range tests {

@@ -38,8 +38,10 @@ func TestCancellationReason_MarshalText(t *testing.T) {
 		reason order.CancellationReason
 		want   string
 	}{
+		// ==================== Success cases ==================== //
 		{name: "should marshal CancellationReasonCustomerCancelled to 'customer_cancelled'", reason: order.CancellationReasonCustomerCancelled, want: "customer_cancelled"},
 		{name: "should marshal CancellationReasonPaymentError to 'payment_error'", reason: order.CancellationReasonPaymentError, want: "payment_error"},
+		// ==================== Failure cases ==================== //
 		{name: "should marshal unknown reason to 'unknown'", reason: order.CancellationReason{}, want: "unknown"},
 	}
 	for _, tt := range tests {

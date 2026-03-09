@@ -38,8 +38,10 @@ func TestStatus_MarshalText(t *testing.T) {
 		status payment.Status
 		want   string
 	}{
+		// ==================== Success cases ==================== //
 		{name: "should marshal StatusPending to 'pending'", status: payment.StatusPending, want: "pending"},
 		{name: "should marshal StatusAuthorized to 'authorized'", status: payment.StatusAuthorized, want: "authorized"},
+		// ==================== Failure cases ==================== //
 		{name: "should marshal unknown status to 'unknown'", status: payment.Status{}, want: "unknown"},
 	}
 	for _, tt := range tests {

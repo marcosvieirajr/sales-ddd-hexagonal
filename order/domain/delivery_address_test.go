@@ -235,11 +235,13 @@ func TestDeliveryAddress_Equals(t *testing.T) {
 		other *order.DeliveryAddress
 		want  bool
 	}{
+		// ==================== Success cases ==================== //
 		{
 			name:  "should return true for equal delivery addresses",
 			other: kernel.Must(order.NewDeliveryAddress("12345-678", "Street", "123", "", "District", "City", "BA", "Country")),
 			want:  true,
 		},
+		// ==================== Failure cases ==================== //
 		{
 			name:  "should return false for different delivery addresses",
 			other: kernel.Must(order.NewDeliveryAddress("12345-678", "Street n2", "123", "", "District", "City", "BA", "Country")),
@@ -254,6 +256,7 @@ func TestDeliveryAddress_Equals(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := baseAddr.Equals(tt.other)
+
 			assert.Equal(t, tt.want, got)
 		})
 	}
