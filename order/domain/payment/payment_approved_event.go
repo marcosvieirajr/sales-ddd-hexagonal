@@ -1,10 +1,14 @@
 package payment
 
-import "time"
+import (
+	"time"
+
+	"github.com/marcosvieirajr/sales-ddd-hexagonal/kernel"
+)
 
 // ApprovedEvent represents the event when a payment is approved.
 type ApprovedEvent struct {
-	Event
+	kernel.Event
 	PaymentID       string  `json:"payment_id"`
 	OrderID         string  `json:"order_id"`
 	Amount          float64 `json:"amount"`
@@ -13,7 +17,7 @@ type ApprovedEvent struct {
 
 func NewApprovedEvent(paymentID, orderID string, amount float64, transactionCode *string) RefusedEvent {
 	return RefusedEvent{
-		Event: Event{
+		Event: kernel.Event{
 			DateOccurred: time.Now().UTC(),
 		},
 		PaymentID:       paymentID,

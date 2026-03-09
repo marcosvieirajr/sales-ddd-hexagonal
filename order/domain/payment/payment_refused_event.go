@@ -1,18 +1,14 @@
 package payment
 
-import "time"
+import (
+	"time"
 
-type Event struct {
-	DateOccurred time.Time `json:"occurred_at"`
-}
-
-func (e Event) OccurredAt() time.Time {
-	return e.DateOccurred
-}
+	"github.com/marcosvieirajr/sales-ddd-hexagonal/kernel"
+)
 
 // RefusedEvent represents the event when a payment is refused.
 type RefusedEvent struct {
-	Event
+	kernel.Event
 	PaymentID       string  `json:"payment_id"`
 	OrderID         string  `json:"order_id"`
 	Amount          float64 `json:"amount"`
@@ -21,7 +17,7 @@ type RefusedEvent struct {
 
 func NewRefusedEvent(paymentID, orderID string, amount float64, transactionCode *string) RefusedEvent {
 	return RefusedEvent{
-		Event: Event{
+		Event: kernel.Event{
 			DateOccurred: time.Now().UTC(),
 		},
 		PaymentID:       paymentID,
