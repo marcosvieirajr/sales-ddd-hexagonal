@@ -69,3 +69,12 @@ func isNil(value any) bool {
 		return false
 	}
 }
+
+type isZero interface{ IsZero() bool }
+
+func CheckNotZeroValue(value isZero, err error) error {
+	if value.IsZero() {
+		return err
+	}
+	return nil
+}

@@ -77,6 +77,10 @@ func (da *DeliveryAddress) Equals(other *DeliveryAddress) bool {
 	return *da == *other
 }
 
+func (da *DeliveryAddress) IsZero() bool {
+	return da == nil || *da == DeliveryAddress{}
+}
+
 func checkValidState(state string) error {
 	state = strings.ToUpper(state)
 	if _, ok := validStates[state]; !ok {
