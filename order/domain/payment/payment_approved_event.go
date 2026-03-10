@@ -15,9 +15,11 @@ type ApprovedEvent struct {
 	TransactionCode *string `json:"transaction_code"`
 }
 
+// NewApprovedEvent constructs an ApprovedEvent with the current UTC timestamp.
 func NewApprovedEvent(paymentID, orderID string, amount float64, transactionCode *string) RefusedEvent {
 	return RefusedEvent{
 		Event: kernel.Event{
+			ID:           kernel.NewID().String(),
 			DateOccurred: time.Now().UTC(),
 		},
 		PaymentID:       paymentID,

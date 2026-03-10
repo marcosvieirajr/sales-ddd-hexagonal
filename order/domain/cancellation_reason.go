@@ -25,6 +25,7 @@ var cancellationToString = map[CancellationReason]string{
 	CancellationReasonOther:             "other",
 }
 
+// String returns the string representation of the CancellationReason.
 func (s CancellationReason) String() string {
 	if str, ok := cancellationToString[s]; ok {
 		return str

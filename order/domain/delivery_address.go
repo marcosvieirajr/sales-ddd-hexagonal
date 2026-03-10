@@ -77,6 +77,7 @@ func (da *DeliveryAddress) Equals(other *DeliveryAddress) bool {
 	return *da == *other
 }
 
+// IsZero reports whether the DeliveryAddress is uninitialized (nil pointer or zero-value struct).
 func (da *DeliveryAddress) IsZero() bool {
 	return da == nil || *da == DeliveryAddress{}
 }

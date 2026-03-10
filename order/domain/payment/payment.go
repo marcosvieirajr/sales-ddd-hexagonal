@@ -122,11 +122,8 @@ func (p *Payment) DefineTransactionCode(code string) error {
 	return nil
 }
 
-type DomainEvent interface {
-	OccurredAt() time.Time
-}
-
-func (p *Payment) AddDomainEvent(event DomainEvent) {
+// AddDomainEvent registers a payment domain event (stub; implementation pending).
+func (p *Payment) AddDomainEvent(event kernel.DomainEvent) {
 	// TODO: implement and test...
 }
 
@@ -147,6 +144,6 @@ func (p *Payment) generateTransactionCode() {
 		return
 	}
 
-	c := `LOCAL-` + kernel.NewID().String()
+	c := "LOCAL-" + kernel.NewID().String()[:8] // TODO: reimplement
 	_ = p.DefineTransactionCode(c)
 }

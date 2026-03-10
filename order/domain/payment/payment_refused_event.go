@@ -15,9 +15,11 @@ type RefusedEvent struct {
 	TransactionCode *string `json:"transaction_code"`
 }
 
+// NewRefusedEvent constructs a RefusedEvent with the current UTC timestamp.
 func NewRefusedEvent(paymentID, orderID string, amount float64, transactionCode *string) RefusedEvent {
 	return RefusedEvent{
 		Event: kernel.Event{
+			ID:           kernel.NewID().String(),
 			DateOccurred: time.Now().UTC(),
 		},
 		PaymentID:       paymentID,
