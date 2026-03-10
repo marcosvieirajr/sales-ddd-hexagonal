@@ -15,7 +15,7 @@ func TestStatus_String(t *testing.T) {
 		status order.Status
 		want   string
 	}{
-		{name: "should return 'created' for StatusCreated", status: order.StatusCreated, want: "created"},
+		{name: "should return 'pending' for StatusPending", status: order.StatusPending, want: "pending"},
 		{name: "should return 'paid' for StatusPaid", status: order.StatusPaid, want: "paid"},
 		{name: "should return 'separating' for StatusSeparating", status: order.StatusSeparating, want: "separating"},
 		{name: "should return 'shipped' for StatusShipped", status: order.StatusShipped, want: "shipped"},
@@ -40,7 +40,7 @@ func TestStatus_MarshalText(t *testing.T) {
 		want   string
 	}{
 		// ==================== Success cases ==================== //
-		{name: "should marshal StatusCreated to 'created'", status: order.StatusCreated, want: "created"},
+		{name: "should marshal StatusPending to 'pending'", status: order.StatusPending, want: "pending"},
 		{name: "should marshal StatusPaid to 'paid'", status: order.StatusPaid, want: "paid"},
 		// ==================== Failure cases ==================== //
 		{name: "should marshal unknown status to 'unknown'", status: order.Status{}, want: "unknown"},
@@ -63,11 +63,11 @@ func TestStatus_Equals(t *testing.T) {
 		want   bool
 	}{
 		// ==================== Success cases ==================== //
-		{name: "should return true when both statuses are the same", status: order.StatusCreated, other: order.StatusCreated, want: true},
+		{name: "should return true when both statuses are the same", status: order.StatusPending, other: order.StatusPending, want: true},
 		{name: "should return true when comparing the same Paid status", status: order.StatusPaid, other: order.StatusPaid, want: true},
 		// ==================== Failure cases ==================== //
-		{name: "should return false when statuses are different", status: order.StatusCreated, other: order.StatusPaid, want: false},
-		{name: "should return false when comparing with an uninitialized status", status: order.StatusCreated, other: order.Status{}, want: false},
+		{name: "should return false when statuses are different", status: order.StatusPending, other: order.StatusPaid, want: false},
+		{name: "should return false when comparing with an uninitialized status", status: order.StatusPending, other: order.Status{}, want: false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -85,7 +85,7 @@ func TestParseStatus(t *testing.T) {
 		value      int
 		wantStatus order.Status
 	}{
-		{name: "should parse 1 to StatusCreated", value: 1, wantStatus: order.StatusCreated},
+		{name: "should parse 1 to StatusPending", value: 1, wantStatus: order.StatusPending},
 		{name: "should parse 2 to StatusPaid", value: 2, wantStatus: order.StatusPaid},
 		{name: "should parse 3 to StatusSeparating", value: 3, wantStatus: order.StatusSeparating},
 		{name: "should parse 4 to StatusShipped", value: 4, wantStatus: order.StatusShipped},

@@ -8,7 +8,7 @@ var ErrInvalidOrderStatus = errs.New("ORDER.INVALID_STATUS", "invalid order stat
 type Status struct{ value int }
 
 var (
-	StatusCreated    = Status{1} // StatusCreated is the initial state of an order after placement.
+	StatusPending    = Status{1} // StatusPending is the initial state of an order after placement.
 	StatusPaid       = Status{2} // StatusPaid indicates the order payment has been confirmed.
 	StatusSeparating = Status{3} // StatusSeparating indicates the order is being picked and packed.
 	StatusShipped    = Status{4} // StatusShipped indicates the order has been dispatched to the carrier.
@@ -17,7 +17,7 @@ var (
 )
 
 var statusToString = map[Status]string{
-	StatusCreated:    "created",
+	StatusPending:    "pending",
 	StatusPaid:       "paid",
 	StatusSeparating: "separating",
 	StatusShipped:    "shipped",
