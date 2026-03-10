@@ -62,6 +62,8 @@ func NewOrder(customerID string, address *DeliveryAddress) (*Order, error) {
 		TotalAmount:     0,
 		Status:          StatusPending,
 		Number:          generateNumber(),
+		items:           make(map[string]*orderitem.OrderItem),
+		payments:        make(map[string]*payment.Payment),
 	}, nil
 }
 

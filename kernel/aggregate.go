@@ -17,6 +17,9 @@ type AggregateRoot struct {
 
 // AddDomainEvent registers a domain event, keyed by its EventID to prevent duplicates.
 func (o *AggregateRoot) AddDomainEvent(event DomainEvent) {
+	if o.events == nil {
+		o.events = make(map[string]DomainEvent)
+	}
 	o.events[event.EventID()] = event
 }
 
