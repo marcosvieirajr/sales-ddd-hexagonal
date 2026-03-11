@@ -4,224 +4,151 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/marcosvieirajr/sales-ddd-hexagonal/order/domain"
 	"github.com/marcosvieirajr/sales-ddd-hexagonal/kernel"
+	"github.com/marcosvieirajr/sales-ddd-hexagonal/order/domain"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
+// ==================== Tests   ==================== //
+
 func TestNewDeliveryAddress(t *testing.T) {
-	t.Run("should successfully create a delivery address with valid input", func(t *testing.T) {
-		type args struct {
-			cep        string
-			street     string
-			number     string
-			complement string
-			district   string
-			city       string
-			state      string
-			country    string
-		}
-		tests := []struct {
-			name string
-			args args
-			want *order.DeliveryAddress
-		}{
-			{
-				name: "should create a valid delivery address",
-				args: args{
-					cep:        "12345-678",
-					street:     "Street",
-					number:     "123",
-					complement: "Complement",
-					district:   "District",
-					city:       "City",
-					state:      "BA",
-					country:    "Country",
-				},
-				want: kernel.Must(order.NewDeliveryAddress(
-					"12345-678",
-					"Street",
-					"123",
-					"Complement",
-					"District",
-					"City",
-					"BA",
-					"Country",
-				)),
-			},
-			{
-				name: "should create a valid delivery address without complement",
-				args: args{
-					cep:        "12345-678",
-					street:     "Street",
-					number:     "123",
-					complement: "",
-					district:   "District",
-					city:       "City",
-					state:      "BA",
-					country:    "Country",
-				},
-				want: kernel.Must(order.NewDeliveryAddress(
-					"12345-678",
-					"Street",
-					"123",
-					"",
-					"District",
-					"City",
-					"BA",
-					"Country",
-				)),
-			},
-		}
-		for _, tt := range tests {
-			t.Run(tt.name, func(t *testing.T) {
-				got, err := order.NewDeliveryAddress(tt.args.cep, tt.args.street, tt.args.number, tt.args.complement, tt.args.district, tt.args.city, tt.args.state, tt.args.country)
-				require.NoError(t, err)
-				assert.Equal(t, tt.want, got)
-			})
-		}
-	})
+	type args struct {
+		cep        string
+		street     string
+		number     string
+		complement string
+		district   string
+		city       string
+		state      string
+		country    string
+	}
 
-	t.Run("should return an error when required fields are empty", func(t *testing.T) {
-		type args struct {
-			cep        string
-			street     string
-			number     string
-			complement string
-			district   string
-			city       string
-			state      string
-			country    string
-		}
-		tests := []struct {
-			name    string
-			args    args
-			wantErr error
-		}{
-			{
-				name: "should return an error for delivery address with whitespace fields - street",
-				args: args{
-					cep:        "12345-678",
-					street:     "",
-					number:     "123",
-					complement: "Complement",
-					district:   "District",
-					city:       "City",
-					state:      "BA",
-					country:    "Country",
-				},
-				wantErr: order.ErrInvalidStreet,
-			}, {
-				name: "should return an error for delivery address with whitespace fields - number",
-				args: args{
-					cep:        "12345-678",
-					street:     "Street",
-					number:     "",
-					complement: "Complement",
-					district:   "District",
-					city:       "City",
-					state:      "BA",
-					country:    "Country",
-				},
-				wantErr: order.ErrInvalidNumber,
+	// ==================== Success cases ==================== //
+	successTests := []struct {
+		name string
+		args args
+		want *order.DeliveryAddress
+	}{
+		{
+			name: "should create a valid address",
+			args: args{
+				cep: "12345-678", street: "Street", number: "123",
+				complement: "Complement", district: "District", city: "City",
+				state: "BA", country: "Country",
 			},
-			{
-				name: "should return an error for delivery address with whitespace fields - district",
-				args: args{
-					cep:        "12345-678",
-					street:     "Street",
-					number:     "123",
-					complement: "Complement",
-					district:   "",
-					city:       "City",
-					state:      "BA",
-					country:    "Country",
-				},
-				wantErr: order.ErrInvalidDistrict,
+			want: kernel.Must(order.NewDeliveryAddress(
+				"12345-678", "Street", "123", "Complement", "District", "City", "BA", "Country",
+			)),
+		},
+		{
+			name: "should create a valid address without complement",
+			args: args{
+				cep: "12345-678", street: "Street", number: "123",
+				complement: "", district: "District", city: "City",
+				state: "BA", country: "Country",
 			},
-			{
-				name: "should return an error for delivery address with whitespace fields - city",
-				args: args{
-					cep:        "12345-678",
-					street:     "Street",
-					number:     "123",
-					complement: "Complement",
-					district:   "District",
-					city:       "",
-					state:      "BA",
-					country:    "Country",
-				},
-				wantErr: order.ErrInvalidCity,
-			},
-			{
-				name: "should return an error for delivery address with whitespace fields - country",
-				args: args{
-					cep:        "12345-678",
-					street:     "Street",
-					number:     "123",
-					complement: "Complement",
-					district:   "District",
-					city:       "City",
-					state:      "BA",
-					country:    "",
-				},
-				wantErr: order.ErrInvalidCountry,
-			},
-		}
-		for _, tt := range tests {
-			t.Run(tt.name, func(t *testing.T) {
-				got, err := order.NewDeliveryAddress(tt.args.cep, tt.args.street, tt.args.number, tt.args.complement, tt.args.district, tt.args.city, tt.args.state, tt.args.country)
-				require.Error(t, err)
-				assert.Nil(t, got)
-				assert.ErrorIs(t, err, tt.wantErr)
-			})
-		}
-	})
+			want: kernel.Must(order.NewDeliveryAddress(
+				"12345-678", "Street", "123", "", "District", "City", "BA", "Country",
+			)),
+		},
+	}
+	for _, tt := range successTests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := order.NewDeliveryAddress(
+				tt.args.cep, tt.args.street, tt.args.number, tt.args.complement,
+				tt.args.district, tt.args.city, tt.args.state, tt.args.country,
+			)
 
-	t.Run("should return an error when CEP is invalid", func(t *testing.T) {
-		tests := []struct {
-			name    string
-			cep     string
-			wantErr error
-		}{
-			{name: "whitespace", cep: "", wantErr: order.ErrInvalidCEP},
-			{name: "missing hyphen", cep: "12345678", wantErr: order.ErrInvalidCEP},
-			{name: "too many digits after hyphen", cep: "123456-789", wantErr: order.ErrInvalidCEP},
-			{name: "hyphen in wrong position", cep: "12-345678", wantErr: order.ErrInvalidCEP},
-			{name: "non-numeric characters", cep: "ABCDE-123", wantErr: order.ErrInvalidCEP},
-		}
-		for _, tt := range tests {
-			t.Run(tt.name, func(t *testing.T) {
-				got, err := order.NewDeliveryAddress(tt.cep, "Street", "123", "",
-					"District", "City", "BA", "Country")
-				require.Error(t, err)
-				assert.Nil(t, got)
-				assert.ErrorIs(t, err, tt.wantErr)
-			})
-		}
-	})
+			require.NoError(t, err)
+			assert.Equal(t, tt.want, got)
+		})
+	}
 
-	t.Run("should return an error when state is invalid", func(t *testing.T) {
-		tests := []struct {
-			name    string
-			state   string
-			wantErr error
-		}{
-			{name: "invalid UF code", state: "AA", wantErr: order.ErrInvalidState},
-			{name: "full state name instead of UF", state: "State", wantErr: order.ErrInvalidState},
-			{name: "single character", state: "A", wantErr: order.ErrInvalidState},
-		}
-		for _, tt := range tests {
-			t.Run(tt.name, func(t *testing.T) {
-				got, err := order.NewDeliveryAddress("12345-678", "Street", "123", "",
-					"District", "City", tt.state, "Country")
-				require.Error(t, err)
-				assert.Nil(t, got)
-				assert.ErrorIs(t, err, tt.wantErr)
-			})
-		}
-	})
+	// ==================== Failure cases ==================== //
+	failureTests := []struct {
+		name    string
+		args    args
+		wantErr error
+	}{
+		{
+			name:    "should return an error when street is empty",
+			args:    args{cep: "12345-678", street: "", number: "123", complement: "Complement", district: "District", city: "City", state: "BA", country: "Country"},
+			wantErr: order.ErrInvalidStreet,
+		},
+		{
+			name:    "should return an error when number is empty",
+			args:    args{cep: "12345-678", street: "Street", number: "", complement: "Complement", district: "District", city: "City", state: "BA", country: "Country"},
+			wantErr: order.ErrInvalidNumber,
+		},
+		{
+			name:    "should return an error when district is empty",
+			args:    args{cep: "12345-678", street: "Street", number: "123", complement: "Complement", district: "", city: "City", state: "BA", country: "Country"},
+			wantErr: order.ErrInvalidDistrict,
+		},
+		{
+			name:    "should return an error when city is empty",
+			args:    args{cep: "12345-678", street: "Street", number: "123", complement: "Complement", district: "District", city: "", state: "BA", country: "Country"},
+			wantErr: order.ErrInvalidCity,
+		},
+		{
+			name:    "should return an error when country is empty",
+			args:    args{cep: "12345-678", street: "Street", number: "123", complement: "Complement", district: "District", city: "City", state: "BA", country: ""},
+			wantErr: order.ErrInvalidCountry,
+		},
+		{
+			name:    "should return an error when CEP is empty",
+			args:    args{cep: "", street: "Street", number: "123", complement: "", district: "District", city: "City", state: "BA", country: "Country"},
+			wantErr: order.ErrInvalidCEP,
+		},
+		{
+			name:    "should return an error when CEP is missing hyphen",
+			args:    args{cep: "12345678", street: "Street", number: "123", complement: "", district: "District", city: "City", state: "BA", country: "Country"},
+			wantErr: order.ErrInvalidCEP,
+		},
+		{
+			name:    "should return an error when CEP has too many digits after hyphen",
+			args:    args{cep: "12345-7890", street: "Street", number: "123", complement: "", district: "District", city: "City", state: "BA", country: "Country"},
+			wantErr: order.ErrInvalidCEP,
+		},
+		{
+			name:    "should return an error when CEP has hyphen in wrong position",
+			args:    args{cep: "12-345678", street: "Street", number: "123", complement: "", district: "District", city: "City", state: "BA", country: "Country"},
+			wantErr: order.ErrInvalidCEP,
+		},
+		{
+			name:    "should return an error when CEP has non-numeric characters",
+			args:    args{cep: "ABCDE-123", street: "Street", number: "123", complement: "", district: "District", city: "City", state: "BA", country: "Country"},
+			wantErr: order.ErrInvalidCEP,
+		},
+		{
+			name:    "should return an error when state is an invalid UF code",
+			args:    args{cep: "12345-678", street: "Street", number: "123", complement: "", district: "District", city: "City", state: "AA", country: "Country"},
+			wantErr: order.ErrInvalidState,
+		},
+		{
+			name:    "should return an error when state is a full state name instead of UF",
+			args:    args{cep: "12345-678", street: "Street", number: "123", complement: "", district: "District", city: "City", state: "State", country: "Country"},
+			wantErr: order.ErrInvalidState,
+		},
+		{
+			name:    "should return an error when state is a single character",
+			args:    args{cep: "12345-678", street: "Street", number: "123", complement: "", district: "District", city: "City", state: "A", country: "Country"},
+			wantErr: order.ErrInvalidState,
+		},
+	}
+	for _, tt := range failureTests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := order.NewDeliveryAddress(
+				tt.args.cep, tt.args.street, tt.args.number, tt.args.complement,
+				tt.args.district, tt.args.city, tt.args.state, tt.args.country,
+			)
+
+			require.Error(t, err)
+			assert.Nil(t, got)
+			assert.ErrorIs(t, err, tt.wantErr)
+		})
+	}
 }
 
 func TestDeliveryAddress_Equals(t *testing.T) {
@@ -262,9 +189,39 @@ func TestDeliveryAddress_Equals(t *testing.T) {
 	}
 }
 
+func TestDeliveryAddress_IsZero(t *testing.T) {
+	tests := []struct {
+		name string
+		addr *order.DeliveryAddress
+		want bool
+	}{
+		{
+			name: "should return true for nil pointer",
+			addr: nil,
+			want: true,
+		},
+		{
+			name: "should return true for zero-value struct",
+			addr: &order.DeliveryAddress{},
+			want: true,
+		},
+		{
+			name: "should return false for a valid address",
+			addr: kernel.Must(order.NewDeliveryAddress("12345-678", "Street", "123", "", "District", "City", "BA", "Country")),
+			want: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := tt.addr.IsZero()
+
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
 // This test ensures that all fields of the DeliveryAddress struct, as value object,
-// are unexported, which is a common way to enforce immutability. By making the fields unexported,
-// we prevent external code from modifying the state of the DeliveryAddress after it has been created.
+// are unexported, preventing external mutation after construction.
 func TestDeliveryAddress_MustBeImmutable(t *testing.T) {
 	typ := reflect.TypeOf(order.DeliveryAddress{})
 	for i := 0; i < typ.NumField(); i++ {

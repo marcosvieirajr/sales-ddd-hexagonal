@@ -27,7 +27,7 @@ type DeliveryAddress struct {
 	cep        string
 	street     string
 	number     string
-	complement string
+	complement string // optional
 	district   string
 	city       string
 	state      string
@@ -54,7 +54,7 @@ func NewDeliveryAddress(cep, street, number, complement, district, city, state, 
 		return nil, err
 	}
 
-	da := DeliveryAddress{
+	return &DeliveryAddress{
 		cep:        cep,
 		street:     street,
 		number:     number,
@@ -63,9 +63,7 @@ func NewDeliveryAddress(cep, street, number, complement, district, city, state, 
 		city:       city,
 		state:      state,
 		country:    country,
-	}
-
-	return &da, nil
+	}, nil
 }
 
 // Equals reports whether da and other represent the same postal address by
