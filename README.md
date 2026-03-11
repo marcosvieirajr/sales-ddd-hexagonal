@@ -65,27 +65,39 @@ Additional modules — `inventory/` (Inventory BC) and `notification/` (Notifica
 ## Repository Structure
 
 ```
-go.work                             — workspace: shared, order, customer, catalog, inventory, notification
+go.work                             — workspace: kernel, order, customer, catalog, inventory, notification
 
-shared/                             — Shared Kernel (module: .../shared)
+kernel/                             — Shared Kernel (module: .../kernel)
 │
 ├── errs/
 │   └── errors.go                   — DomainError with typed ErrorCode (AGGREGATE.REASON)
+│
+├── guard/
+│   └── validations.go              — CheckNotNullOrWhiteSpace, CheckNotZeroOrNegative,
+│                                     CheckMatchRegex, CheckNotNil, CheckNil
 │
 ├── types/
 │   ├── sex.go                      — Sex enum (NotInformed, Male, Female, Other)
 │   └── status_marital.go           — MaritalStatus enum
 │
-├── utils.go                        — Must[T]() generic helper; GenerateID() stub   (package shared)
-└── validations.go                  — CheckNotNullOrWhiteSpace, CheckNotZeroOrNegative,
-                                      CheckMatchRegex, CheckNotNil, CheckNil   (package shared)
+├── aggregate.go                    — AggregateRoot (embeddable); DomainEvent interface
+├── event.go                        — Event base struct (EventID, OccurredAt)
+└── utils.go                        — Must[T]() generic helper; GenerateID() stub
 
 order/                              — Order Management BC (Core Domain ★) (module: .../order)
 │
 └── domain/
-    ├── order.go                    — Order aggregate root [WIP]
+    ├── order.go                    — Order aggregate root
+    │                                 Methods: NewOrder, AddItem, RemoveItem, StartPayment,
+    │                                          MarkAsPaid, MarkAsSeparating, MarkAsShipped,
+    │                                          MarkAsDelivered, Cancel
     ├── order_status.go             — OrderStatus enum: Created → Paid → Separating → Shipped → Delivered | Cancelled
-    ├── delivery_address.go         — DeliveryAddress value object (immutable, Brazilian CEP format)
+    ├── cancellation_reason.go      — CancellationReason enum: CustomerCancelled, PaymentError,
+    │                                 OutOfStock, InvalidAddress, Other
+    ├── delivery_address.go         — DeliveryAddress value object (immutable, Brazilian CEP/UF validation)
+    ├── order_shipped_event.go      — OrderShippedEvent domain event
+    ├── order_delivered_event.go    — OrderDeliveredEvent domain event
+    ├── order_cancelled_event.go    — OrderCancelledEvent domain event
     │
     ├── orderitem/
     │   └── order_item.go           — OrderItem entity (child of Order aggregate)
@@ -98,10 +110,14 @@ order/                              — Order Management BC (Core Domain ★) (m
         │                             Must call DefineTransactionCode before confirming/refusing
         ├── payment_method.go       — PaymentMethod enum: CreditCard, DebitCard, Cash, Pix, BankTransfer, BancSlip
         ├── payment_status.go       — PaymentStatus enum: Pending, Authorized, Refused, Refunded, Cancelled
-        ├── payment_approved_event.go — ApprovedEvent domain event
-        └── payment_refused_event.go  — RefusedEvent domain event + base Event struct
+        ├── payment_approved_event.go — PaymentApprovedEvent domain event
+        └── payment_refused_event.go  — PaymentRefusedEvent domain event
 
-customer/                           — Customer Management BC (scaffold)
+customer/                           — Customer Management BC (module: .../customer)
+│
+└── domain/
+    └── address.go                  — Address entity with CEP/UF validation
+
 catalog/                            — Catalog Management BC (scaffold)
 inventory/                          — Inventory BC (scaffold, placeholder)
 notification/                       — Notification BC (scaffold, placeholder)
@@ -119,8 +135,8 @@ var ErrInvalidProductID = errs.New("ORDER_ITEM.INVALID_PRODUCT_ID", "product ID 
 
 // Multiple validation failures collected:
 return errors.Join(
-    shared.CheckNotNullOrWhiteSpace(productID, ErrInvalidProductID),
-    shared.CheckNotZeroOrNegative(unitPrice, ErrInvalidUnitPrice),
+    guard.CheckNotNullOrWhiteSpace(productID, ErrInvalidProductID),
+    guard.CheckNotZeroOrNegative(unitPrice, ErrInvalidUnitPrice),
 )
 
 // Test with errors.Is (compares by ErrorCode, not pointer):
@@ -174,6 +190,8 @@ type ApprovedEvent struct {
 ```bash
 # Run all tests (workspace)
 go test ./...
+# or using Mise
+mise test
 # or using Makefile
 make test
 
@@ -198,15 +216,31 @@ go vet ./...
 
 ## Roadmap
 
-- [x] Domain — `errs`: DomainError with typed ErrorCode
-- [x] Domain — `validations`: reusable guard functions
-- [x] Domain — `DeliveryAddress`: value object with CEP validation
-- [x] Domain — `OrderItem`: entity with invariants and TotalPrice recalculation
-- [x] Domain — `Payment`: entity with state machine and domain events
-- [ ] Domain — `Order`: aggregate root (in progress)
+### Domain Layer
+- [x] `kernel/errs` — `DomainError` with typed `ErrorCode`
+- [x] `kernel/guard` — reusable guard/validation functions
+- [x] `kernel/aggregate` — `AggregateRoot` embeddable + `DomainEvent` interface
+- [x] `kernel/event` — `Event` base struct
+- [x] `order` — `OrderStatus` enum
+- [x] `order` — `CancellationReason` enum
+- [x] `order` — `DeliveryAddress` value object with CEP/UF validation
+- [x] `order` — `OrderItem` entity with pricing invariants and TotalPrice recalculation
+- [x] `order` — `Payment` entity with state machine and domain events
+- [x] `order` — `Order` aggregate root with full lifecycle (add/remove items, payment, shipping, cancellation)
+- [x] `order` — Order domain events (`OrderShipped`, `OrderDelivered`, `OrderCancelled`)
+- [x] `customer` — `Address` entity with CEP/UF validation
+- [ ] `catalog` — domain layer (not started)
+- [ ] `inventory` — domain layer (not started)
+- [ ] `notification` — domain layer (not started)
+
+### Upcoming
 - [ ] Application — use cases / commands / queries
 - [ ] Infrastructure — repository implementations (in-memory / database)
-- [ ] Entry points — HTTP or gRPC handlers
+- [ ] Infrastructure — Redis (cache / session)
+- [ ] Infrastructure — Kafka (event streaming / messaging)
+- [ ] Infrastructure — Storage (file/blob storage)
+- [ ] Entry points — HTTP handlers (REST API)
+- [ ] Entry points — gRPC handlers (internal service communication, if needed)
 
 ---
 
