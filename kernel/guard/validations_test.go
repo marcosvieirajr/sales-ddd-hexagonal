@@ -123,7 +123,6 @@ func TestCheckNotZeroOrNegative(t *testing.T) {
 }
 
 func TestCheckNotNil(t *testing.T) {
-	nonNilValue := "value"
 	var typedNilPtr *string
 
 	tests := []struct {
@@ -134,7 +133,7 @@ func TestCheckNotNil(t *testing.T) {
 		// ==================== Success cases ==================== //
 		{
 			name:    "should return nil when value is non-nil",
-			value:   &nonNilValue,
+			value:   new("value"),
 			wantErr: nil,
 		},
 		// ==================== Failure cases ==================== //
@@ -159,7 +158,6 @@ func TestCheckNotNil(t *testing.T) {
 }
 
 func TestCheckNil(t *testing.T) {
-	nonNilValue := "value"
 	var typedNilPtr *string
 
 	tests := []struct {
@@ -181,7 +179,7 @@ func TestCheckNil(t *testing.T) {
 		// ==================== Failure cases ==================== //
 		{
 			name:    "should return error when value is non-nil",
-			value:   &nonNilValue,
+			value:   new("value"),
 			wantErr: sentinelErr,
 		},
 	}

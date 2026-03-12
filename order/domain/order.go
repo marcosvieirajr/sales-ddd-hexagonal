@@ -260,8 +260,7 @@ func (o *Order) Cancel(reason CancellationReason) error {
 }
 
 func (o *Order) updateTimestamp() {
-	timestamp := time.Now().UTC()
-	o.UpdatedAt = &timestamp
+	o.UpdatedAt = new(time.Now().UTC())
 }
 
 func (o *Order) calculateTotalAmount() {

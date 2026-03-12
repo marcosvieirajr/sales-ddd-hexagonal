@@ -104,8 +104,7 @@ func (a *Address) IsZero() bool {
 }
 
 func (a *Address) updateTimestamp() {
-	timestamp := time.Now().UTC()
-	a.UpdatedAt = &timestamp
+	a.UpdatedAt = new(time.Now().UTC())
 }
 
 func checkValidState(state string) error {

@@ -223,9 +223,8 @@ func TestDeliveryAddress_IsZero(t *testing.T) {
 // This test ensures that all fields of the DeliveryAddress struct, as value object,
 // are unexported, preventing external mutation after construction.
 func TestDeliveryAddress_MustBeImmutable(t *testing.T) {
-	typ := reflect.TypeOf(order.DeliveryAddress{})
-	for i := 0; i < typ.NumField(); i++ {
-		f := typ.Field(i)
+	typ := reflect.TypeFor[order.DeliveryAddress]()
+	for f := range typ.Fields() {
 		if f.PkgPath == "" {
 			t.Fatalf("field %q is exported", f.Name)
 		}

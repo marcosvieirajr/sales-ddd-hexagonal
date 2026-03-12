@@ -148,6 +148,5 @@ func (oi *OrderItem) calculateTotalPrice() {
 }
 
 func (oi *OrderItem) updateTimestamp() {
-	timestamp := time.Now().UTC()
-	oi.UpdatedAt = &timestamp
+	oi.UpdatedAt = new(time.Now().UTC())
 }
