@@ -8,12 +8,12 @@ A reference implementation of **Domain-Driven Design (DDD)** tactical patterns c
 
 ## Overview
 
-| | |
-|---|---|
-| **Language** | Go 1.25 |
+| |                                      |
+|---|--------------------------------------|
+| **Language** | Go 1.26                              |
 | **Workspace** | Go Workspace (`go.work`) — 6 modules |
-| **Core Domain** | Order Management |
-| **Architecture** | DDD + Hexagonal (Ports & Adapters) |
+| **Core Domain** | Order Management                     |
+| **Architecture** | DDD + Hexagonal (Ports & Adapters)   |
 
 ---
 
@@ -259,3 +259,6 @@ Full DDD rules, pattern definitions, and architectural decisions applied in this
 | `github.com/stretchr/testify` | Test assertions (`assert`, `require`) |
 | `github.com/google/go-cmp` | Struct comparison with `cmpopts.IgnoreFields` |
 | `Makefile` | Convenience targets (`make test`, `make build`, `make lint`) |
+
+GIT_AUTHOR_DATE="Wed Mar 12 01:41:22 2026 -0300" GIT_COMMITTER_DATE="Wed Mar 12 01:41:22 2026 -0300" git commit --amend
+--no-edit
