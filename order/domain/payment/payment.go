@@ -71,8 +71,7 @@ func (p *Payment) ConfirmPayment() error {
 		return err
 	}
 
-	now := time.Now().UTC()
-	p.PaidAt = &now
+	p.PaidAt = new(time.Now().UTC())
 	p.Status = StatusAuthorized
 	p.updateTimestamp()
 	p.AddDomainEvent(ApprovedEvent{}) // TODO: add more details to the event (e.g. order ID, amount, etc.) and test that it is emitted correctly.
@@ -128,8 +127,7 @@ func (p *Payment) AddDomainEvent(event kernel.DomainEvent) {
 }
 
 func (p *Payment) updateTimestamp() {
-	timestamp := time.Now().UTC()
-	p.UpdatedAt = &timestamp
+	p.UpdatedAt = new(time.Now().UTC())
 }
 
 func (p *Payment) checkStatusEqual(other Status, err error) error {
